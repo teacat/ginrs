@@ -21,14 +21,20 @@ openssl rsa -in private.key -pubout > public.key
 產生金鑰，便能透過下列方式簽署 JWT，並以公鑰驗證其簽發正確性。
 
 ```go
-import "github.com/teacat/ginrs"
+package main
+
+import (
+	"fmt"
+
+	"github.com/teacat/ginrs"
+)
 
 type Data struct {
 	Username string
 }
 
 func main() {
-    // 欲簽署的資料。
+	// 欲簽署的資料。
 	data := Data{
 		Username: "YamiOdymel",
 	}
@@ -52,8 +58,9 @@ func main() {
 		panic(err)
 	}
 
-    fmt.Println(signedData.Username) // 輸出：YamiOdymel
+	fmt.Println(signedData.Username) // 輸出：YamiOdymel
 }
+
 ```
 
 若沒有要進行簽署，而只是要驗證 JWT 是否正確，則可以將 `LoadKeys` 替換成 `LoadPublicKey` 僅載入公鑰作為驗證用途而不需要私鑰。
@@ -61,3 +68,22 @@ func main() {
 ### 用於 Gin 的中介函式
 
 透過 `Middleware` 函式可以在每個請求進入時將 JWT 簽署的資料放入 `*gin.Context` 的變數中。
+
+```go
+type Data struct {
+	Username string
+}
+
+func main() {
+	r := gin.Default()
+	// 套用 GinRS 的中介函式到所有 Gin 路由。
+	r.Use(ginrs.Middleware(Data{}))
+
+	r.GET("/hello", func(c *gin.Context) {
+		// 透過 ginrs.Get 取得 JWT 資料。
+		if v, ok := ginrs.Get(c).(Data); ok {
+			fmt.Println(v.Username)
+		}
+	})
+}
+```
