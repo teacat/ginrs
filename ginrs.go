@@ -26,7 +26,7 @@ var (
 
 const (
 	// KeyToken
-	KeyToken = "token"
+	KeyToken = "ginrs_token"
 )
 
 // LoadKeys
