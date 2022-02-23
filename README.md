@@ -77,13 +77,13 @@ type Data struct {
 func main() {
 	r := gin.Default()
 	// 套用 GinRS 的中介函式到所有 Gin 路由。
-	r.Use(ginrs.Middleware(Data{}))
+	r.Use(ginrs.Middleware())
 
 	r.GET("/hello", func(c *gin.Context) {
+		var data Data
 		// 透過 ginrs.Get 取得 JWT 資料。
-		if v, ok := ginrs.Get(c).(Data); ok {
-			fmt.Println(v.Username)
-		}
+		ginrs.Get(c, &data)
+		fmt.Println(v.Username)
 	})
 }
 ```
