@@ -108,8 +108,8 @@ func Middleware() func(*gin.Context) {
 	}
 }
 
-// Get gets the Token from the *gin.Context, type cast is required.
-func Get(c *gin.Context, dest interface{}) {
+// MustGet gets the Token from the *gin.Context, type cast is required.
+func MustGet(c *gin.Context, dest interface{}) {
 	v, _ := c.MustGet(KeyToken).(map[string]interface{})
 	b, _ := json.Marshal(v)
 	json.Unmarshal(b, &dest)

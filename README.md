@@ -81,8 +81,8 @@ func main() {
 
 	r.GET("/hello", func(c *gin.Context) {
 		var data Data
-		// 透過 ginrs.Get 取得 JWT 資料。
-		ginrs.Get(c, &data)
+		// 透過 ginrs.MustGet 取得 JWT 資料。
+		ginrs.MustGet(c, &data)
 		fmt.Println(v.Username)
 	})
 }
