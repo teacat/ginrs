@@ -91,23 +91,26 @@ func Parse(t string, dest interface{}) error {
 }
 
 // Middleware gets the JWT from the Authorization header and put it into the *gin.Context for the model to validate.
-func Middleware(typ interface{}) func(*gin.Context) {
+func Middleware() func(*gin.Context) {
 	return func(c *gin.Context) {
+		var data map[string]interface{}
 		str := strings.Split(c.Request.Header.Get("Authorization"), " ")
 		if len(str) != 2 {
 			c.Next()
 			return
 		}
-		if err := Parse(str[1], &typ); err != nil {
+		if err := Parse(str[1], &data); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		c.Set(KeyToken, typ)
+		c.Set(KeyToken, data)
 		c.Next()
 	}
 }
 
 // Get gets the Token from the *gin.Context, type cast is required.
-func Get(c *gin.Context) interface{} {
-	return c.MustGet(KeyToken)
+func Get(c *gin.Context, dest interface{}) {
+	v, _ := c.MustGet(KeyToken).(map[string]interface{})
+	b, _ := json.Marshal(v)
+	json.Unmarshal(b, &dest)
 }
